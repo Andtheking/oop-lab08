@@ -41,7 +41,7 @@ public class MiniGUI {
          * Part 1
          */
         final JPanel part1 = new JPanel();
-        part1.setLayout(new BoxLayout(part1, BoxLayout.Y_AXIS));
+        part1.setLayout(new BoxLayout(part1, BoxLayout.X_AXIS));
         canvas.remove(write);
         canvas.add(part1, BorderLayout.CENTER);
         part1.add(write);
