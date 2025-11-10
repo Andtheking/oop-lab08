@@ -36,7 +36,7 @@ public class DeathNoteImpl implements DeathNote {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void writeName(final String name) {
@@ -50,7 +50,7 @@ public class DeathNoteImpl implements DeathNote {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean writeDeathCause(final String cause) {
@@ -64,7 +64,7 @@ public class DeathNoteImpl implements DeathNote {
             kills.get(lastNameWritten),
             "Inconsistent state..."
         );
-        death.deathCause = cause;
+        death.setDeathCause(cause);
         return true;
     }
 
@@ -79,12 +79,15 @@ public class DeathNoteImpl implements DeathNote {
         if (System.currentTimeMillis() - timeLastNameWritten > TIME_ALLOWED_FOR_DETAILS_OF_DEATH) {
             return false;
         }
-        kills.get(lastNameWritten).deathDetails = details;
+        final var death = Objects.requireNonNull(
+            kills.get(lastNameWritten)
+        );
+        death.setDeathDetails(details);
         return true;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public String getDeathCause(final String name) {
@@ -96,7 +99,7 @@ public class DeathNoteImpl implements DeathNote {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public String getDeathDetails(final String name) {
@@ -108,7 +111,7 @@ public class DeathNoteImpl implements DeathNote {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean isNameWritten(final String name) {
@@ -125,11 +128,11 @@ public class DeathNoteImpl implements DeathNote {
             this.deathDetails = "";
         }
 
-        void setDeathCause(String deathCause) {
+        void setDeathCause(final String deathCause) {
             this.deathCause = deathCause;
         }
 
-        void setDeathDetails(String deathDetails) {
+        void setDeathDetails(final String deathDetails) {
             this.deathDetails = deathDetails;
         }
     }
