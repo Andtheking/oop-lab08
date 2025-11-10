@@ -6,94 +6,132 @@ import java.util.Objects;
 
 import it.unibo.deathnote.api.DeathNote;
 
+/**
+ * Implementation of {@Link DeathNote}.
+ */
 public class DeathNoteImpl implements DeathNote {
-    // Map<String, DeathDetails> kills;
+    private final Map<String, Death> kills = new HashMap<>();
+    private String lastNameWritten;
+    private long timeLastNameWritten;
 
-    // public DeathNoteImpl() {
-    //     kills = new HashMap<>();
-    // }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String getRule(int ruleNumber) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRule'");
+    public String getRule(final int ruleNumber) {
+        if (ruleNotFound(ruleNumber)) {
+            throw new IllegalArgumentException(
+                "The rule " 
+                    + ruleNumber
+                    + " does not exists. Try with a number between 0 and " 
+                    + RULES.size()
+                    + " not included."
+            );
+        }
+        return RULES.get(ruleNumber);
     }
-
-    // @Override
-    // public String getRule(final int ruleNumber) {
-    //     if (ruleNotFound(ruleNumber)) {
-    //         throw new IllegalArgumentException("The rule " + 
-    //             ruleNumber + 
-    //             " does not exists. Try with a number between 0 and " + 
-    //             RULES.size() + 
-    //             " not included."
-    //         );
-    //     }
-    //     return RULES.get(ruleNumber);
-    // }
 
     private boolean ruleNotFound(final int ruleNumber) {
-        return ruleNumber >= RULES.size() || ruleNumber < 0;
+        return ruleNumber > RULES.size() || ruleNumber <= 0;
     }
 
-    // @Override
-    // public void writeName(String name) {
-    //     Objects.requireNonNull(name, "Name to write cannot be null");
-    //     if (kills.containsKey(name)) {
-    //         throw new IllegalArgumentException("The person \"" + name + "\" is already written in this DeathNote.");
-    //     }
-    //     kills.put(name, new DeathDetails());
-    // }
-
+    /**
+     * @inheritDoc
+     */
     @Override
-    public void writeName(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'writeName'");
+    public void writeName(final String name) {
+        Objects.requireNonNull(name, "Name to write cannot be null");
+        if (isNameWritten(name)) {
+            throw new IllegalArgumentException("The person \"" + name + "\" is already written in this DeathNote.");
+        }
+        kills.put(name, new Death());
+        lastNameWritten = name;
+        timeLastNameWritten = System.currentTimeMillis();
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
-    public boolean writeDeathCause(String cause) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'writeDeathCause'");
+    public boolean writeDeathCause(final String cause) {
+        if (lastNameWritten == null) {
+            throw new IllegalStateException("No human name was written.");
+        }
+        if (System.currentTimeMillis() - timeLastNameWritten > TIME_ALLOWED_FOR_CAUSE_OF_DEATH) {
+            return false;
+        }
+        final var death = Objects.requireNonNull(
+            kills.get(lastNameWritten),
+            "Inconsistent state..."
+        );
+        death.deathCause = cause;
+        return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean writeDetails(String details) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'writeDetails'");
+    public boolean writeDetails(final String details) {
+        if (lastNameWritten == null) {
+            return false;
+        }
+        if (System.currentTimeMillis() - timeLastNameWritten > TIME_ALLOWED_FOR_DETAILS_OF_DEATH) {
+            return false;
+        }
+        kills.get(lastNameWritten).deathDetails = details;
+        return true;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
-    public String getDeathCause(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDeathCause'");
+    public String getDeathCause(final String name) {
+        Objects.requireNonNull(name);
+        if (!isNameWritten(name)) {
+            throw new IllegalArgumentException("The name \"" + name + "\" does not appear in the notes");
+        }
+        return kills.get(name).deathCause;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
-    public String getDeathDetails(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDeathDetails'");
+    public String getDeathDetails(final String name) {
+        Objects.requireNonNull(name);
+        if (!isNameWritten(name)) {
+            throw new IllegalArgumentException("The name \"" + name + "\" does not appear in the notes");
+        }
+        return kills.get(name).deathDetails;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
-    public boolean isNameWritten(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isNameWritten'");
+    public boolean isNameWritten(final String name) {
+        Objects.requireNonNull(name);
+        return kills.containsKey(name);
     }
 
+    private final class Death {
+        private String deathCause;
+        private String deathDetails;
 
+        Death() {
+            this.deathCause = HEART_ATTACK_DEATH;
+            this.deathDetails = "";
+        }
 
-    // private class DeathDetails {
-    //     private String deathCause;
-    //     private String deathDetails;
-        
-    //     DeathDetails(String deathCause, String deathDetails) {
-    //         this.deathCause = deathCause;
-    //         this.deathDetails = deathDetails;
-    //     }
+        void setDeathCause(String deathCause) {
+            this.deathCause = deathCause;
+        }
 
-    //     DeathDetails() {
-    //         this(null,null);
-    //     }
-    // }
+        void setDeathDetails(String deathDetails) {
+            this.deathDetails = deathDetails;
+        }
+    }
 }
+

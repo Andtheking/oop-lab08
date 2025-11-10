@@ -8,7 +8,9 @@ import java.util.List;
  * in order to use it properly.
  */
 public interface DeathNote {
-
+    String HEART_ATTACK_DEATH = "Heart attack";
+    int TIME_ALLOWED_FOR_CAUSE_OF_DEATH = 40;
+    int TIME_ALLOWED_FOR_DETAILS_OF_DEATH = 6040;
     /**
      * Returns the list of rules for this DeathNote.
      */
