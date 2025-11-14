@@ -1,46 +1,44 @@
 package it.unibo.mvc.view;
 
-import java.io.IOException;
+import java.util.Objects;
 
-import it.unibo.mvc.api.DrawNumber;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.mvc.api.DrawNumberController;
 import it.unibo.mvc.api.DrawNumberView;
 import it.unibo.mvc.api.DrawResult;
-import it.unibo.mvc.controller.DrawNumberControllerImpl;
-import it.unibo.mvc.model.Configuration;
 
-
-
+/**
+ * Read-only Standard Output DrawNumber game view.
+ */
 public class DrawNumberStandardOutputView implements DrawNumberView {
-    private DrawNumberController observer;
+    private DrawNumberController controller;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void setController(DrawNumberController observer) {
-        this.observer = observer;
+    @SuppressFBWarnings(
+        value = "EI2",
+        justification = "Code provided by exercise"
+    )
+    public void setController(final DrawNumberController observer) {
+        this.controller = observer;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start() {
-        System.out.print("Partita iniziata! ");
-        observer.resetGame();
-        gameLoop();
+        System.out.println("Partita iniziata!"); // NOPMD Standard Output view needs to write on the Standard Output.
+        Objects.requireNonNull(controller, "No controller attached to view.").resetGame();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void result(DrawResult res) {
-        
+    public void result(final DrawResult res) {
+        System.out.println(res.getDescription()); // NOPMD Standard Output view needs to write on the Standard Output.
     }
-
-    private void gameLoop() {
-        while (true) {
-            System.out.print("Inserisci il numero --> ");
-            String inputString = System.console().readLine();
-            try {
-                observer.newAttempt(Integer.parseInt(inputString));
-            } catch (NumberFormatException nfe) {
-                System.out.println("Non hai inserito un numero, riprova.");
-            }
-        }
-    }
-
 }
